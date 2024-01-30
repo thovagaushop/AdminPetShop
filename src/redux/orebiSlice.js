@@ -1,7 +1,14 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  userInfo: {},
+  userInfo: {
+    token:
+      "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBnbWFpbC5jb20iLCJpYXQiOjE3MDY2MDEzMTcsImV4cCI6MjY3MDYwMTMxN30.tKYrYdaSqwVbzso9fme8rGaLsOjjlbV0Jpodi-7kTww",
+    type: "Bearer",
+    id: "59b99de2-009e-44e6-8c63-a37525a27505",
+    email: "admin@gmail.com",
+    roles: ["ROLE_ADMIN"],
+  },
   products: [],
 };
 

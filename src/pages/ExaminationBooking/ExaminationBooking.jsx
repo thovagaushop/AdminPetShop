@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
-import Navbar from "../../components/Navbar/Navbar";
-import Sidebar from "../../components/Sidebar";
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import instance from "../../api/axios";
+import TablePaginationActions from "../../components/Table/CustomTablePagination";
 import {
   Alert,
   Paper,
@@ -13,13 +14,12 @@ import {
   TablePagination,
   TableRow,
 } from "@mui/material";
-import instance from "../../api/axios";
-import TablePaginationActions from "../../components/Table/CustomTablePagination";
-import { useSelector } from "react-redux";
-import FormCategory from "./FormCategory";
+import Sidebar from "../../components/Sidebar";
+import moment from "moment";
 
-export default function Category() {
-  const [categories, setCategories] = useState([]);
+export default function ExaminationBooking() {
+  const [bookings, setBookings] = useState([]);
+  const userInfor = useSelector((state) => state.orebiReducer.userInfo);
   const [message, setMessage] = useState({
     open: false,
     vertical: "top",
@@ -27,14 +27,13 @@ export default function Category() {
     type: null,
     content: "",
   });
-  const userInfo = useSelector((state) => state.orebiReducer.userInfo);
 
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - categories.length) : 0;
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - bookings.length) : 0;
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -51,18 +50,18 @@ export default function Category() {
 
   const handleDelete = (id) => async () => {
     try {
-      const { data } = await instance.delete(`/category/${id}`, {
+      const { data } = await instance.delete(`/examination-bookings/${id}`, {
         headers: {
-          Authorization: `Bearer ${userInfo.token}`,
+          Authorization: `Bearer ${userInfor.token}`,
         },
       });
-      fetchListCategories(data.message);
+      fetchListBookings(data.message);
     } catch (error) {
-      fetchListCategories(error.response.data.message, "error");
+      fetchListBookings(error.response.data.message, "error");
     }
   };
 
-  const fetchListCategories = async (mess, type) => {
+  const fetchListBookings = async (mess, type) => {
     if (mess && !type) {
       setMessage({
         ...message,
@@ -79,8 +78,12 @@ export default function Category() {
       });
     }
     try {
-      const { data } = await instance.get("/category?pageSize=100");
-      setCategories(data.data);
+      const { data } = await instance.get("/examination-bookings/all", {
+        headers: {
+          Authorization: `Bearer ${userInfor.token}`,
+        },
+      });
+      setBookings(data);
     } catch (error) {
       setMessage({
         ...message,
@@ -91,7 +94,7 @@ export default function Category() {
     }
   };
   useEffect(() => {
-    fetchListCategories();
+    fetchListBookings();
   }, []);
   return (
     <>
@@ -116,7 +119,7 @@ export default function Category() {
             {message.content}
           </Alert>
         </Snackbar>
-        {categories.length && (
+        {bookings.length && (
           <Paper sx={{ width: "100%", overflow: "hidden" }}>
             <TableContainer sx={{ maxHeight: 440 }}>
               <Table
@@ -129,7 +132,16 @@ export default function Category() {
                       #
                     </TableCell>
                     <TableCell style={{ width: 50, height: 50 }}>
-                      Name
+                      User
+                    </TableCell>
+                    <TableCell align="left" style={{ width: 30 }}>
+                      Description
+                    </TableCell>
+                    <TableCell align="left" style={{ width: 30 }}>
+                      Date
+                    </TableCell>
+                    <TableCell align="left" style={{ width: 40 }}>
+                      Status
                     </TableCell>
                     <TableCell align="left" style={{ width: 40 }}>
                       Action
@@ -138,22 +150,46 @@ export default function Category() {
                 </TableHead>
                 <TableBody>
                   {(rowsPerPage > 0
-                    ? categories.slice(
+                    ? bookings.slice(
                         page * rowsPerPage,
                         page * rowsPerPage + rowsPerPage
                       )
-                    : categories
+                    : bookings
                   ).map((row, index) => (
-                    <TableRow key={row.categoryId}>
+                    <TableRow key={row.id}>
                       <TableCell>{index}</TableCell>
-
+                      <TableCell>{row.email}</TableCell>
                       <TableCell style={{ width: 70 }}>
-                        {row.categoryName}
+                        {row.description}
+                      </TableCell>
+                      <TableCell style={{ width: 30 }} align="left">
+                        {moment(row.date).format("DD/MM/YYYY HH::mm")}
+                      </TableCell>
+                      <TableCell style={{ width: 30 }} align="left">
+                        {!row.status ? (
+                          <div
+                            style={{
+                              background: "yellow",
+                              padding: "10px 5px 10px 5px",
+                              textAlign: "center",
+                            }}
+                          >
+                            Pending
+                          </div>
+                        ) : (
+                          <div
+                            style={{
+                              background: "green",
+                              padding: "10px 5px 10px 5px",
+                              textAlign: "center",
+                            }}
+                          >
+                            Approved
+                          </div>
+                        )}
                       </TableCell>
                       <TableCell style={{ width: 30 }}>
-                        <button onClick={handleDelete(row.categoryId)}>
-                          Delete
-                        </button>
+                        <button onClick={handleDelete(row.id)}>Delete</button>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -169,7 +205,7 @@ export default function Category() {
               style={{ width: "100%" }}
               rowsPerPageOptions={[5, 10, 25, { label: "All", value: -1 }]}
               colSpan={3}
-              count={categories.length}
+              count={bookings.length}
               rowsPerPage={rowsPerPage}
               page={page}
               SelectProps={{
@@ -185,9 +221,7 @@ export default function Category() {
           </Paper>
         )}
       </div>
-      <FormCategory
-        onSubmit={(mess, type) => fetchListCategories(mess, type)}
-      />
+      <div></div>
     </>
   );
 }
