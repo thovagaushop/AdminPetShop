@@ -17,6 +17,7 @@ import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { login } from "./redux/orebiSlice";
 import ExaminationBooking from "./pages/ExaminationBooking/ExaminationBooking";
+import TakeCareBooking from "./pages/TakeCareBooking/TakeCareBooking";
 
 const Layout = () => {
   return <></>;
@@ -33,7 +34,7 @@ const router = createBrowserRouter(
         path="/examination-bookings"
         element={<ExaminationBooking />}
       ></Route>
-      {/* <Route path="/categories" element={<Category />}></Route> */}
+      <Route path="//take-care-bookings" element={<TakeCareBooking />}></Route>
       <Route path="/signup" element={<SignUp />}></Route>
       <Route path="/signin" element={<SignIn />}></Route>
     </Route>
