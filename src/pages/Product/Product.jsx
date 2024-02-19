@@ -20,6 +20,7 @@ import { useSelector } from "react-redux";
 
 export default function Product() {
   const [products, setProducts] = useState([]);
+  const [product, setProduct] = useState(null);
   const userInfor = useSelector((state) => state.orebiReducer.userInfo);
   const [message, setMessage] = useState({
     open: false,
@@ -117,7 +118,7 @@ export default function Product() {
           </Alert>
         </Snackbar>
         {products.length && (
-          <Paper sx={{ width: "100%", overflow: "hidden" }}>
+          <Paper sx={{ width: "95%", overflow: "hidden" }}>
             <TableContainer sx={{ maxHeight: 440 }}>
               <Table
                 sx={{ minWidth: 500 }}
@@ -155,7 +156,7 @@ export default function Product() {
                       )
                     : products
                   ).map((row, index) => (
-                    <TableRow key={row.id}>
+                    <TableRow key={row.id} onClick={() => setProduct(row)}>
                       <TableCell>{index}</TableCell>
                       <TableCell>
                         <img
@@ -211,7 +212,13 @@ export default function Product() {
           </Paper>
         )}
       </div>
-      <FormProduct onSubmit={(mess, type) => fetchListProduct(mess, type)} />
+      <FormProduct
+        onSubmit={(mess, type) => {
+          fetchListProduct(mess, type);
+          setProduct(null);
+        }}
+        updateProduct={product}
+      />
     </>
   );
 }

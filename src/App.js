@@ -3,6 +3,7 @@ import {
   RouterProvider,
   createBrowserRouter,
   createRoutesFromElements,
+  useNavigate,
 } from "react-router-dom";
 import "./App.css";
 import MainDash from "./components/MainDash/MainDash";
@@ -14,48 +15,64 @@ import SignUp from "./pages/Auth/SignUp";
 import Product from "./pages/Product/Product";
 import Category from "./pages/Category/Category";
 import { useEffect } from "react";
-import { useDispatch } from "react-redux";
-import { login } from "./redux/orebiSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { login, logout } from "./redux/orebiSlice";
 import ExaminationBooking from "./pages/ExaminationBooking/ExaminationBooking";
 import TakeCareBooking from "./pages/TakeCareBooking/TakeCareBooking";
+import { parseJwt } from "./utils";
 
 const Layout = () => {
   return <></>;
 };
 
-const router = createBrowserRouter(
-  createRoutesFromElements(
-    <Route>
-      {/* ==================== Header Navlink Start here =================== */}
-      <Route index element={<Home />}></Route>
-      <Route path="/products" element={<Product />}></Route>
-      <Route path="/categories" element={<Category />}></Route>
-      <Route
-        path="/examination-bookings"
-        element={<ExaminationBooking />}
-      ></Route>
-      <Route path="//take-care-bookings" element={<TakeCareBooking />}></Route>
-      <Route path="/signup" element={<SignUp />}></Route>
-      <Route path="/signin" element={<SignIn />}></Route>
-    </Route>
-  )
-);
-
 function App() {
+  const user = useSelector((state) => state.orebiReducer.userInfo);
   const dispatch = useDispatch();
 
+  const router = createBrowserRouter(
+    createRoutesFromElements(
+      <Route>
+        {/* ==================== Header Navlink Start here =================== */}
+        <Route index element={<Home />}></Route>
+        <Route path="/products" element={<Product />}></Route>
+        <Route path="/categories" element={<Category />}></Route>
+        <Route
+          path="/examination-bookings"
+          element={<ExaminationBooking />}
+        ></Route>
+        <Route path="/take-care-bookings" element={<TakeCareBooking />}></Route>
+        <Route
+          path="/signup"
+          element={user.token ? <Home /> : <SignUp />}
+        ></Route>
+        <Route
+          path="/signin"
+          element={user.token ? <Home /> : <SignIn />}
+        ></Route>
+      </Route>
+    )
+  );
+
   useEffect(() => {
-    dispatch(
-      login({
-        token:
-          "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBnbWFpbC5jb20iLCJpYXQiOjE3MDY2MDEzMTcsImV4cCI6MjY3MDYwMTMxN30.tKYrYdaSqwVbzso9fme8rGaLsOjjlbV0Jpodi-7kTww",
-        type: "Bearer",
-        id: "59b99de2-009e-44e6-8c63-a37525a27505",
-        email: "admin@gmail.com",
-        roles: ["ROLE_ADMIN"],
-      })
-    );
-  });
+    const checkTokenExpiration = () => {
+      if (user.token) {
+        try {
+          const decodedJwt = parseJwt(user.token);
+          console.log(decodedJwt);
+
+          if (decodedJwt.exp * 1000 < Date.now()) {
+            dispatch(logout());
+          }
+        } catch (error) {
+          console.error("Error decoding JWT:", error);
+          // Handle error (e.g., logout user)
+          dispatch(logout());
+        }
+      }
+    };
+
+    checkTokenExpiration();
+  }, [user, dispatch]);
   return (
     <div className="App">
       <div className="AppGlass">

@@ -2,8 +2,40 @@ import { Box, MenuItem, TextField } from "@mui/material";
 import { useEffect, useState } from "react";
 import instance from "../../api/axios";
 import { useSelector } from "react-redux";
+import { getProductImage } from "../../utils";
 
-export default function FormProduct({ onSubmit }) {
+const petTypes = [
+  {
+    value: "SENIOR_DOG",
+    label: "Senior Dog",
+  },
+  {
+    value: "CAT",
+    label: "Cat",
+  },
+  {
+    value: "FISH",
+    label: "Fish",
+  },
+  {
+    value: "SMALL_PET",
+    label: "Small Pet",
+  },
+  {
+    value: "BIRD",
+    label: "Bird",
+  },
+  {
+    value: "REPTILE",
+    label: "Reptile",
+  },
+  {
+    value: "RABBIT",
+    label: "Rabbit",
+  },
+];
+
+export default function FormProduct({ onSubmit, updateProduct }) {
   const [categories, setCategories] = useState([]);
   const userInfo = useSelector((state) => state.orebiReducer.userInfo);
   const [product, setProduct] = useState({
@@ -17,36 +49,6 @@ export default function FormProduct({ onSubmit }) {
     categoryId: "",
     petType: "",
   });
-  const petTypes = [
-    {
-      value: "SENIOR_DOG",
-      label: "Senior Dog",
-    },
-    {
-      value: "CAT",
-      label: "Cat",
-    },
-    {
-      value: "FISH",
-      label: "Fish",
-    },
-    {
-      value: "SMALL_PET",
-      label: "Small Pet",
-    },
-    {
-      value: "BIRD",
-      label: "Bird",
-    },
-    {
-      value: "REPTILE",
-      label: "Reptile",
-    },
-    {
-      value: "RABBIT",
-      label: "Rabbit",
-    },
-  ];
 
   const handleWithFile = async (file) => {
     console.log(file);
@@ -55,7 +57,16 @@ export default function FormProduct({ onSubmit }) {
       file.type === "image/png" ||
       file.type === "image/jpg"
     ) {
-      setProduct({ ...product, images: [...product.images, file] });
+      setProduct((prevProduct) => {
+        const updatedImages = Array.isArray(prevProduct.images)
+          ? [...prevProduct.images, file]
+          : [file];
+        return {
+          ...prevProduct,
+          images: updatedImages,
+        };
+      });
+      // setProduct({ ...product, images: [...product.images, file] });
     } else {
       // Handle other file types
       onSubmit("Unsupported file type");
@@ -65,15 +76,38 @@ export default function FormProduct({ onSubmit }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await instance.post("/product", product, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${userInfo.token}`,
-        },
-      });
+      if (updateProduct) {
+        console.log({ product });
+        await instance.put(`/product/${updateProduct.id}`, product, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${userInfo.token}`,
+          },
+        });
+      } else {
+        await instance.post("/product", product, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${userInfo.token}`,
+          },
+        });
+      }
+
       onSubmit("Add success");
+      setProduct({
+        title: "",
+        description: "",
+        price: 0,
+        rating: 0,
+        discount: 0,
+        quantity: 0,
+        images: [],
+        categoryId: "",
+        petType: "",
+      });
     } catch (error) {
       onSubmit(error.response.data.message, "error");
+      console.log(error);
     }
   };
 
@@ -89,11 +123,17 @@ export default function FormProduct({ onSubmit }) {
   useEffect(() => {
     fetchCategories();
   }, []);
+
+  useEffect(() => {
+    setProduct({ ...updateProduct });
+  }, [updateProduct]);
+  console.log(product.petType);
   return (
     <div
       style={{
         marginTop: "70px",
         textAlign: "center",
+        overflow: "scroll",
       }}
     >
       <Box
@@ -118,6 +158,7 @@ export default function FormProduct({ onSubmit }) {
             onChange={(e) =>
               setProduct({ ...product, categoryId: e.target.value })
             }
+            value={product.categoryId}
           >
             {categories.map((option) => (
               <MenuItem key={option.categoryId} value={option.categoryId}>
@@ -137,6 +178,7 @@ export default function FormProduct({ onSubmit }) {
             onChange={(e) =>
               setProduct({ ...product, petType: e.target.value })
             }
+            value={product.petType ?? ""}
           >
             {petTypes.map((option) => (
               <MenuItem key={option.value} value={option.value}>
@@ -151,6 +193,8 @@ export default function FormProduct({ onSubmit }) {
             style={{ width: "80%" }}
             placeholder="Enter title"
             onChange={(e) => setProduct({ ...product, title: e.target.value })}
+            value={product.title}
+            focused={!!updateProduct}
           />
           <TextField
             id="outlined-error-helper-text"
@@ -162,6 +206,8 @@ export default function FormProduct({ onSubmit }) {
             onChange={(e) =>
               setProduct({ ...product, description: e.target.value })
             }
+            value={product.description}
+            focused={!!updateProduct}
           />
           <TextField
             id="outlined-number"
@@ -174,6 +220,8 @@ export default function FormProduct({ onSubmit }) {
               shrink: true,
             }}
             onChange={(e) => setProduct({ ...product, price: e.target.value })}
+            value={product.price}
+            focused={!!updateProduct}
           />
           <TextField
             id="outlined-number"
@@ -186,6 +234,8 @@ export default function FormProduct({ onSubmit }) {
               shrink: true,
             }}
             onChange={(e) => setProduct({ ...product, rating: e.target.value })}
+            value={product.rating}
+            focused={!!updateProduct}
           />
           <TextField
             id="outlined-number"
@@ -200,6 +250,8 @@ export default function FormProduct({ onSubmit }) {
             onChange={(e) =>
               setProduct({ ...product, quantity: e.target.value })
             }
+            value={product.quantity}
+            focused={!!updateProduct}
           />
           <TextField
             id="outlined-number"
@@ -214,7 +266,22 @@ export default function FormProduct({ onSubmit }) {
             onChange={(e) =>
               setProduct({ ...product, discound: e.target.value })
             }
+            value={product.discount}
+            focused={!!updateProduct}
           />
+
+          {updateProduct ? (
+            <div>
+              <img
+                src={getProductImage(updateProduct.images[0])}
+                width={70}
+                height={70}
+                alt="Img 1"
+              />
+            </div>
+          ) : (
+            <></>
+          )}
 
           <TextField
             id="outlined-number"
@@ -229,6 +296,19 @@ export default function FormProduct({ onSubmit }) {
             onChange={(e) => handleWithFile(e.target.files[0])}
           />
 
+          {updateProduct ? (
+            <div>
+              <img
+                src={getProductImage(updateProduct.images[1])}
+                width={70}
+                height={70}
+                alt="Img 1"
+              />
+            </div>
+          ) : (
+            <></>
+          )}
+
           <TextField
             id="outlined-number"
             label="Image 2"
@@ -241,6 +321,19 @@ export default function FormProduct({ onSubmit }) {
             }}
             onChange={(e) => handleWithFile(e.target.files[0])}
           />
+
+          {updateProduct ? (
+            <div>
+              <img
+                src={getProductImage(updateProduct.images[2])}
+                width={70}
+                height={70}
+                alt="Img 1"
+              />
+            </div>
+          ) : (
+            <></>
+          )}
           <TextField
             id="outlined-number"
             label="Image 3"

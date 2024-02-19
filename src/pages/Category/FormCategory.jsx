@@ -1,27 +1,49 @@
 import { Box, TextField } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import instance from "../../api/axios";
 import { useSelector } from "react-redux";
 
-export default function FormCategory({ onSubmit }) {
+export default function FormCategory({ onSubmit, updateCategory }) {
   const [category, setCategory] = useState({
-    name: "",
+    categoryName: "",
   });
   const userInfo = useSelector((state) => state.orebiReducer.userInfo);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     try {
-      await instance.post("/category", category, {
-        headers: {
-          Authorization: `Bearer ${userInfo.token}`,
-        },
+      if (updateCategory) {
+        await instance.put(
+          `/category/${updateCategory.categoryId}`,
+          { name: category.categoryName },
+          {
+            headers: {
+              Authorization: `Bearer ${userInfo.token}`,
+            },
+          }
+        );
+      } else {
+        await instance.post("/category", category, {
+          headers: {
+            Authorization: `Bearer ${userInfo.token}`,
+          },
+        });
+      }
+      onSubmit("Success");
+      setCategory({
+        categoryName: "",
       });
-      onSubmit("Add success");
     } catch (error) {
       onSubmit(error.response.data.message, "error");
     }
   };
+
+  useEffect(() => {
+    setCategory({
+      categoryName: !!updateCategory ? updateCategory.categoryName : "",
+    });
+  }, [updateCategory]);
   return (
     <div
       style={{
@@ -46,7 +68,11 @@ export default function FormCategory({ onSubmit }) {
             size="small"
             style={{ width: "80%" }}
             placeholder="Enter title"
-            onChange={(e) => setCategory({ ...category, name: e.target.value })}
+            value={category.categoryName}
+            focused={!!updateCategory}
+            onChange={(e) =>
+              setCategory({ ...category, categoryName: e.target.value })
+            }
           />
         </div>
         <button

@@ -20,6 +20,7 @@ import FormCategory from "./FormCategory";
 
 export default function Category() {
   const [categories, setCategories] = useState([]);
+  const [category, setCategory] = useState(null);
   const [message, setMessage] = useState({
     open: false,
     vertical: "top",
@@ -117,7 +118,7 @@ export default function Category() {
           </Alert>
         </Snackbar>
         {categories.length && (
-          <Paper sx={{ width: "100%", overflow: "hidden" }}>
+          <Paper sx={{ width: "95%", overflow: "hidden" }}>
             <TableContainer sx={{ maxHeight: 440 }}>
               <Table
                 sx={{ minWidth: 500 }}
@@ -144,7 +145,10 @@ export default function Category() {
                       )
                     : categories
                   ).map((row, index) => (
-                    <TableRow key={row.categoryId}>
+                    <TableRow
+                      key={row.categoryId}
+                      onClick={() => setCategory(row)}
+                    >
                       <TableCell>{index}</TableCell>
 
                       <TableCell style={{ width: 70 }}>
@@ -186,7 +190,12 @@ export default function Category() {
         )}
       </div>
       <FormCategory
-        onSubmit={(mess, type) => fetchListCategories(mess, type)}
+        style={{ marginLeft: "20" }}
+        onSubmit={(mess, type) => {
+          fetchListCategories(mess, type);
+          setCategory(null);
+        }}
+        updateCategory={category}
       />
     </>
   );
