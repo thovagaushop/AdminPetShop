@@ -80,7 +80,7 @@ export default function Product() {
       });
     }
     try {
-      const { data } = await instance.get("/product");
+      const { data } = await instance.get("/product?pageSize=100");
       setProducts(data.data);
     } catch (error) {
       setMessage({
