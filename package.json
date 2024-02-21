@@ -1,7 +1,7 @@
 {
   "name": "dashboard",
   "version": "0.1.0",
-  "homepage": "https://AnandDubey1711.github.io/react-admin-dashboard",
+  "homepage": "https://AnandDubey1711.github.io/",
   "private": true,
   "dependencies": {
     "@emotion/react": "^11.9.0",

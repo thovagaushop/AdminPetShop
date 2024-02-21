@@ -20,6 +20,8 @@ import { login, logout } from "./redux/orebiSlice";
 import ExaminationBooking from "./pages/ExaminationBooking/ExaminationBooking";
 import TakeCareBooking from "./pages/TakeCareBooking/TakeCareBooking";
 import { parseJwt } from "./utils";
+import Order from "./pages/Order/Order";
+import Config from "./pages/Config/Config";
 
 const Layout = () => {
   return <></>;
@@ -41,6 +43,8 @@ function App() {
           element={<ExaminationBooking />}
         ></Route>
         <Route path="/take-care-bookings" element={<TakeCareBooking />}></Route>
+        <Route path="/orders" element={<Order />}></Route>
+        <Route path="/config" element={<Config />}></Route>
         <Route
           path="/signup"
           element={user.token ? <Home /> : <SignUp />}

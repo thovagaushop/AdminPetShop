@@ -38,7 +38,8 @@ export const SidebarData = [
   },
   {
     icon: UilChart,
-    heading: "Analytics",
+    heading: "Config",
+    path: "/config",
   },
   {
     icon: UilChart,
