@@ -52,7 +52,7 @@ export default function Order() {
 
   const handleDelete = (id) => async () => {
     try {
-      const { data } = await instance.delete(`/category/${id}`, {
+      const { data } = await instance.delete(`/orders/${id}`, {
         headers: {
           Authorization: `Bearer ${userInfo.token}`,
         },
@@ -86,6 +86,37 @@ export default function Order() {
         },
       });
       setOrders(data);
+    } catch (error) {
+      setMessage({
+        ...message,
+        open: true,
+        type: "error",
+        content: error.response.data.message,
+      });
+    }
+  };
+
+  const handleUpdateStatus = async (email, orderId) => {
+    try {
+      const { data } = await instance.put(
+        `/orders/${orderId}`,
+        {
+          email,
+          status: "SUCCESS",
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${userInfo.token}`,
+          },
+        }
+      );
+      setMessage({
+        ...message,
+        open: true,
+        type: "success",
+        content: data.message,
+      });
+      fetchListOrders();
     } catch (error) {
       setMessage({
         ...message,
@@ -139,7 +170,7 @@ export default function Order() {
                     <TableCell style={{ width: 50, height: 50 }}>
                       Infomation
                     </TableCell>
-                    <TableCell style={{ width: 50, height: 50 }}>
+                    <TableCell style={{ width: 30, height: 50 }}>
                       Payment Type
                     </TableCell>
                     <TableCell style={{ width: 50, height: 50 }}>
@@ -147,9 +178,6 @@ export default function Order() {
                     </TableCell>
                     <TableCell style={{ width: 50, height: 50 }}>
                       Date
-                    </TableCell>
-                    <TableCell align="left" style={{ width: 40 }}>
-                      Action
                     </TableCell>
                   </TableRow>
                 </TableHead>
@@ -179,21 +207,33 @@ export default function Order() {
                           ))}
                         </div>
                       </TableCell>
-                      <TableCell style={{ width: 70 }}>
-                        {row.payment?.paymentMethod}
-                      </TableCell>
-                      <TableCell style={{ width: 70 }}>
-                        {row.orderStatus}
-                      </TableCell>
-                      <TableCell style={{ width: 70 }}>
-                        {row.orderDate}
-                      </TableCell>
                       <TableCell style={{ width: 30 }}>
-                        <button
-                        // onClick={handleDelete(row.categoryId)}
+                        <div
+                          className={
+                            row.payment?.paymentMethod === "CAST"
+                              ? "btn-warning"
+                              : "btn-primary"
+                          }
                         >
-                          Delete
+                          {row.payment?.paymentMethod}
+                        </div>
+                      </TableCell>
+                      <TableCell style={{ width: 50 }}>
+                        <button
+                          className={
+                            row.orderStatus === "PENDING"
+                              ? "btn btn-warning"
+                              : "btn btn-success"
+                          }
+                          onClick={() =>
+                            handleUpdateStatus(row.email, row.orderId)
+                          }
+                        >
+                          {row.orderStatus}
                         </button>
+                      </TableCell>
+                      <TableCell style={{ width: 80 }}>
+                        {row.orderDate}
                       </TableCell>
                     </TableRow>
                   ))}
@@ -225,14 +265,7 @@ export default function Order() {
           </Paper>
         )}
       </div>
-      <FormCategory
-        style={{ marginLeft: "20" }}
-        onSubmit={(mess, type) => {
-          fetchListOrders(mess, type);
-          setOrder(null);
-        }}
-        updateCategory={order}
-      />
+      <div></div>
     </>
   );
 }

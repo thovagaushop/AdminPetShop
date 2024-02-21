@@ -143,9 +143,7 @@ export default function TakeCareBooking() {
                     <TableCell align="left" style={{ width: 30 }}>
                       End Date
                     </TableCell>
-                    <TableCell align="left" style={{ width: 40 }}>
-                      Status
-                    </TableCell>
+
                     <TableCell align="left" style={{ width: 40 }}>
                       Action
                     </TableCell>
@@ -171,29 +169,7 @@ export default function TakeCareBooking() {
                       <TableCell style={{ width: 30 }} align="left">
                         {moment(row.endDate).format("DD/MM/YYYY")}
                       </TableCell>
-                      <TableCell style={{ width: 30 }} align="left">
-                        {!row.status ? (
-                          <div
-                            style={{
-                              background: "yellow",
-                              padding: "10px 5px 10px 5px",
-                              textAlign: "center",
-                            }}
-                          >
-                            Pending
-                          </div>
-                        ) : (
-                          <div
-                            style={{
-                              background: "green",
-                              padding: "10px 5px 10px 5px",
-                              textAlign: "center",
-                            }}
-                          >
-                            Approved
-                          </div>
-                        )}
-                      </TableCell>
+
                       <TableCell style={{ width: 30 }}>
                         <button onClick={handleDelete(row.id)}>Delete</button>
                       </TableCell>

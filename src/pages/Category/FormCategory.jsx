@@ -24,11 +24,15 @@ export default function FormCategory({ onSubmit, updateCategory }) {
           }
         );
       } else {
-        await instance.post("/category", category, {
-          headers: {
-            Authorization: `Bearer ${userInfo.token}`,
-          },
-        });
+        await instance.post(
+          "/category",
+          { name: category.categoryName },
+          {
+            headers: {
+              Authorization: `Bearer ${userInfo.token}`,
+            },
+          }
+        );
       }
       onSubmit("Success");
       setCategory({

@@ -5,8 +5,11 @@ import { UilSignOutAlt } from "@iconscout/react-unicons";
 import "./Sidebar.css";
 import Logo from "../imgs/logo.png";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { logout } from "../redux/orebiSlice";
 
 const Sidebar = () => {
+  const dispatch = useDispatch();
   const [selected, setSelected] = useState(0);
   const navigate = useNavigate();
 
@@ -39,7 +42,12 @@ const Sidebar = () => {
           );
         })}
         <div className="menuItem">
-          <UilSignOutAlt />
+          <UilSignOutAlt
+            onClick={() => {
+              dispatch(logout());
+              navigate("/signin");
+            }}
+          />
         </div>
       </div>
     </div>

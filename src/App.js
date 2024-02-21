@@ -35,16 +35,31 @@ function App() {
     createRoutesFromElements(
       <Route>
         {/* ==================== Header Navlink Start here =================== */}
-        <Route index element={<Home />}></Route>
-        <Route path="/products" element={<Product />}></Route>
-        <Route path="/categories" element={<Category />}></Route>
+        <Route index element={user.token ? <Home /> : <SignIn />}></Route>
+        <Route
+          path="/products"
+          element={user.token ? <Product /> : <SignIn />}
+        ></Route>
+        <Route
+          path="/categories"
+          element={user.token ? <Category /> : <SignIn />}
+        ></Route>
         <Route
           path="/examination-bookings"
           element={<ExaminationBooking />}
         ></Route>
-        <Route path="/take-care-bookings" element={<TakeCareBooking />}></Route>
-        <Route path="/orders" element={<Order />}></Route>
-        <Route path="/config" element={<Config />}></Route>
+        <Route
+          path="/take-care-bookings"
+          element={user.token ? <TakeCareBooking /> : <SignIn />}
+        ></Route>
+        <Route
+          path="/orders"
+          element={user.token ? <Order /> : <SignIn />}
+        ></Route>
+        <Route
+          path="/config"
+          element={user.token ? <Config /> : <SignIn />}
+        ></Route>
         <Route
           path="/signup"
           element={user.token ? <Home /> : <SignUp />}
