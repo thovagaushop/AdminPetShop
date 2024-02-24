@@ -238,7 +238,10 @@ export default function Category() {
                 class="btn-close"
                 data-bs-dismiss="modal"
                 aria-label="Close"
-                onClick={() => setShowModal(false)}
+                onClick={() => {
+                  setShowModal(false);
+                  setCategory(null);
+                }}
               ></button>
             </div>
             <div class="modal-body">
@@ -265,7 +268,10 @@ export default function Category() {
                 type="button"
                 class="btn btn-secondary"
                 data-bs-dismiss="modal"
-                onClick={() => setShowModal(false)}
+                onClick={() => {
+                  setShowModal(false);
+                  setCategory(null);
+                }}
               >
                 Close
               </button>
