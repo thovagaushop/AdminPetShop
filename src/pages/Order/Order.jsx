@@ -138,6 +138,7 @@ export default function Order() {
             vertical: message.vertical,
             horizontal: message.horizontal,
           }}
+          autoHideDuration={1000}
           open={message.open}
           onClose={handleCloseSnack}
           message="I love snacks"

@@ -60,7 +60,7 @@ export default function SignIn() {
         ...message,
         open: true,
         type: "error",
-        content: error.response.data.message,
+        content: "Invalid Email or Password",
       });
     }
   };
@@ -81,6 +81,7 @@ export default function SignIn() {
             vertical: message.vertical,
             horizontal: message.horizontal,
           }}
+          autoHideDuration={1000}
           open={message.open}
           onClose={handleCloseSnack}
           message="I love snacks"

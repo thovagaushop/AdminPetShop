@@ -39,7 +39,7 @@ export default function FormCategory({ onSubmit, updateCategory }) {
         categoryName: "",
       });
     } catch (error) {
-      onSubmit(error.response.data.message, "error");
+      onSubmit("Error: Name categoried Requied", "error");
     }
   };
 
@@ -51,8 +51,8 @@ export default function FormCategory({ onSubmit, updateCategory }) {
   return (
     <div
       style={{
-        marginTop: "70px",
         textAlign: "center",
+        overflow: "scroll",
       }}
     >
       <Box

@@ -21,6 +21,7 @@ import { useSelector } from "react-redux";
 export default function Product() {
   const [products, setProducts] = useState([]);
   const [product, setProduct] = useState(null);
+  const [showModal, setShowModal] = useState(false);
   const userInfor = useSelector((state) => state.orebiReducer.userInfo);
   const [message, setMessage] = useState({
     open: false,
@@ -97,12 +98,13 @@ export default function Product() {
   return (
     <>
       <Sidebar />
-      <div className="container">
+      <div className="container" style={{ paddingRight: "30px" }}>
         <Snackbar
           anchorOrigin={{
             vertical: message.vertical,
             horizontal: message.horizontal,
           }}
+          autoHideDuration={10000}
           open={message.open}
           onClose={handleCloseSnack}
           message="I love snacks"
@@ -117,6 +119,22 @@ export default function Product() {
             {message.content}
           </Alert>
         </Snackbar>
+        <div
+          style={{
+            fontWeight: "bold",
+            fontSize: "40px",
+            textAlign: "center",
+          }}
+        >
+          Products
+        </div>
+        <div
+          className="btn btn-primary"
+          style={{ marginBottom: "20px", marginTop: "20px" }}
+          onClick={() => setShowModal(true)}
+        >
+          Add product
+        </div>
         {products.length && (
           <Paper sx={{ width: "95%", overflow: "hidden" }}>
             <TableContainer sx={{ maxHeight: 440 }}>
@@ -156,9 +174,21 @@ export default function Product() {
                       )
                     : products
                   ).map((row, index) => (
-                    <TableRow key={row.id} onClick={() => setProduct(row)}>
-                      <TableCell>{index}</TableCell>
-                      <TableCell>
+                    <TableRow key={row.id}>
+                      <TableCell
+                        onClick={() => {
+                          setProduct(row);
+                          setShowModal(true);
+                        }}
+                      >
+                        {index}
+                      </TableCell>
+                      <TableCell
+                        onClick={() => {
+                          setProduct(row);
+                          setShowModal(true);
+                        }}
+                      >
                         <img
                           src={getProductImage(row.images[0])}
                           alt={row.title}
@@ -166,17 +196,53 @@ export default function Product() {
                           height={50}
                         />
                       </TableCell>
-                      <TableCell style={{ width: 70 }}>{row.title}</TableCell>
-                      <TableCell style={{ width: 30 }} align="left">
+                      <TableCell
+                        style={{ width: 70 }}
+                        onClick={() => {
+                          setProduct(row);
+                          setShowModal(true);
+                        }}
+                      >
+                        {row.title}
+                      </TableCell>
+                      <TableCell
+                        style={{ width: 30 }}
+                        align="left"
+                        onClick={() => {
+                          setProduct(row);
+                          setShowModal(true);
+                        }}
+                      >
                         {row.quantity}
                       </TableCell>
-                      <TableCell style={{ width: 30 }} align="left">
+                      <TableCell
+                        style={{ width: 30 }}
+                        align="left"
+                        onClick={() => {
+                          setProduct(row);
+                          setShowModal(true);
+                        }}
+                      >
                         $ {row.price}
                       </TableCell>
-                      <TableCell style={{ width: 30 }} align="left">
+                      <TableCell
+                        style={{ width: 30 }}
+                        align="left"
+                        onClick={() => {
+                          setProduct(row);
+                          setShowModal(true);
+                        }}
+                      >
                         {row.discount}%
                       </TableCell>
-                      <TableCell style={{ width: 30 }} align="left">
+                      <TableCell
+                        style={{ width: 30 }}
+                        align="left"
+                        onClick={() => {
+                          setProduct(row);
+                          setShowModal(true);
+                        }}
+                      >
                         $ {row.specialPrice}
                       </TableCell>
                       <TableCell style={{ width: 30 }}>
@@ -212,13 +278,52 @@ export default function Product() {
           </Paper>
         )}
       </div>
-      <FormProduct
-        onSubmit={(mess, type) => {
-          fetchListProduct(mess, type);
-          setProduct(null);
-        }}
-        updateProduct={product}
-      />
+
+      <div
+        className={`modal ${showModal ? "show" : ""}`}
+        id="exampleModal"
+        tabIndex="-1"
+        aria-labelledby="exampleModalLabel"
+        aria-hidden="true"
+        style={{ display: showModal ? "block" : "none" }}
+      >
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="exampleModalLabel">
+                Product
+              </h1>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+                onClick={() => setShowModal(false)}
+              ></button>
+            </div>
+            <div class="modal-body">
+              <FormProduct
+                onSubmit={(mess, type) => {
+                  fetchListProduct(mess, type);
+                  setProduct(null);
+                  setShowModal(false);
+                }}
+                updateProduct={product}
+              />
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+                onClick={() => setShowModal(false)}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </>
   );
 }

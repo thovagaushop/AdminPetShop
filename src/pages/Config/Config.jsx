@@ -78,6 +78,7 @@ export default function Config() {
             vertical: message.vertical,
             horizontal: message.horizontal,
           }}
+          autoHideDuration={1000}
           open={message.open}
           onClose={handleCloseSnack}
           message="I love snacks"
@@ -124,6 +125,11 @@ export default function Config() {
                 InputLabelProps={{
                   shrink: true,
                 }}
+                inputProps={{
+                  step: "any", // Allow decimal steps
+                  min: 0, // Set min if provided, otherwise let it be undefined
+                  // Set max if provided, otherwise let it be undefined
+                }}
                 value={config.maxPlaceTakeCare}
                 //   focused={!!updateCategory}
                 onChange={(e) =>
@@ -141,6 +147,11 @@ export default function Config() {
                 placeholder="Max slot of Examination"
                 InputLabelProps={{
                   shrink: true,
+                }}
+                inputProps={{
+                  step: "any", // Allow decimal steps
+                  min: 0, // Set min if provided, otherwise let it be undefined
+                  // Set max if provided, otherwise let it be undefined
                 }}
                 value={config.maxPlaceExamination}
                 //   focused={!!updateCategory}

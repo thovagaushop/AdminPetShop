@@ -28,6 +28,7 @@ export default function Category() {
     type: null,
     content: "",
   });
+  const [showModal, setShowModal] = useState(false);
   const userInfo = useSelector((state) => state.orebiReducer.userInfo);
 
   const [page, setPage] = React.useState(0);
@@ -97,12 +98,13 @@ export default function Category() {
   return (
     <>
       <Sidebar />
-      <div className="container">
+      <div className="container" style={{ paddingRight: "30px" }}>
         <Snackbar
           anchorOrigin={{
             vertical: message.vertical,
             horizontal: message.horizontal,
           }}
+          autoHideDuration={1000}
           open={message.open}
           onClose={handleCloseSnack}
           message="I love snacks"
@@ -117,6 +119,23 @@ export default function Category() {
             {message.content}
           </Alert>
         </Snackbar>
+
+        <div
+          style={{
+            fontWeight: "bold",
+            fontSize: "40px",
+            textAlign: "center",
+          }}
+        >
+          Categories
+        </div>
+        <div
+          className="btn btn-primary"
+          style={{ marginBottom: "20px", marginTop: "20px" }}
+          onClick={() => setShowModal(true)}
+        >
+          Add category
+        </div>
         {categories.length && (
           <Paper sx={{ width: "95%", overflow: "hidden" }}>
             <TableContainer sx={{ maxHeight: 440 }}>
@@ -145,13 +164,23 @@ export default function Category() {
                       )
                     : categories
                   ).map((row, index) => (
-                    <TableRow
-                      key={row.categoryId}
-                      onClick={() => setCategory(row)}
-                    >
-                      <TableCell>{index}</TableCell>
+                    <TableRow key={row.categoryId}>
+                      <TableCell
+                        onClick={() => {
+                          setCategory(row);
+                          setShowModal(true);
+                        }}
+                      >
+                        {index}
+                      </TableCell>
 
-                      <TableCell style={{ width: 70 }}>
+                      <TableCell
+                        style={{ width: 70 }}
+                        onClick={() => {
+                          setCategory(row);
+                          setShowModal(true);
+                        }}
+                      >
                         {row.categoryName}
                       </TableCell>
                       <TableCell style={{ width: 30 }}>
@@ -189,14 +218,61 @@ export default function Category() {
           </Paper>
         )}
       </div>
-      <FormCategory
-        style={{ marginLeft: "20" }}
-        onSubmit={(mess, type) => {
-          fetchListCategories(mess, type);
-          setCategory(null);
-        }}
-        updateCategory={category}
-      />
+
+      <div
+        className={`modal ${showModal ? "show" : ""}`}
+        id="exampleModal"
+        tabIndex="-1"
+        aria-labelledby="exampleModalLabel"
+        aria-hidden="true"
+        style={{ display: showModal ? "block" : "none" }}
+      >
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="exampleModalLabel">
+                Product
+              </h1>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+                onClick={() => setShowModal(false)}
+              ></button>
+            </div>
+            <div class="modal-body">
+              {/* {category && (
+                <FormCategory
+                  onSubmit={(mess, type) => {
+                    fetchListCategories(mess, type);
+                    setCategory(null);
+                  }}
+                  updateCategory={category} // Truyền selectedCategoryId vào modal
+                />
+              )} */}
+              <FormCategory
+                onSubmit={(mess, type) => {
+                  fetchListCategories(mess, type);
+                  setShowModal(false);
+                  setCategory(null);
+                }}
+                updateCategory={category}
+              />
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+                onClick={() => setShowModal(false)}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </>
   );
 }

@@ -76,8 +76,33 @@ export default function FormProduct({ onSubmit, updateProduct }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      console.log(product);
+      // Validate
+      if (
+        !product.categoryId ||
+        !product.petType ||
+        !product.title ||
+        !product.description ||
+        !product.price ||
+        !product.quantity
+      ) {
+        setProduct({
+          title: "",
+          description: "",
+          price: 0,
+          rating: 0,
+          discount: 0,
+          quantity: 0,
+          images: [],
+          categoryId: "",
+          petType: "",
+        });
+        onSubmit("Please fill all the fields", "error");
+        return;
+      }
       if (updateProduct) {
         console.log({ product });
+        // if(product.images)
         await instance.put(`/product/${updateProduct.id}`, product, {
           headers: {
             "Content-Type": "multipart/form-data",
@@ -92,8 +117,6 @@ export default function FormProduct({ onSubmit, updateProduct }) {
           },
         });
       }
-
-      onSubmit("Add success");
       setProduct({
         title: "",
         description: "",
@@ -105,7 +128,19 @@ export default function FormProduct({ onSubmit, updateProduct }) {
         categoryId: "",
         petType: "",
       });
+      onSubmit("Add success");
     } catch (error) {
+      setProduct({
+        title: "",
+        description: "",
+        price: 0,
+        rating: 0,
+        discount: 0,
+        quantity: 0,
+        images: [],
+        categoryId: "",
+        petType: "",
+      });
       onSubmit(error.response.data.message, "error");
       console.log(error);
     }
@@ -125,13 +160,12 @@ export default function FormProduct({ onSubmit, updateProduct }) {
   }, []);
 
   useEffect(() => {
-    setProduct({ ...updateProduct });
+    setProduct({ ...updateProduct, images: [] });
   }, [updateProduct]);
   console.log(product.petType);
   return (
     <div
       style={{
-        marginTop: "70px",
         textAlign: "center",
         overflow: "scroll",
       }}
@@ -219,6 +253,11 @@ export default function FormProduct({ onSubmit, updateProduct }) {
             InputLabelProps={{
               shrink: true,
             }}
+            inputProps={{
+              step: "any", // Allow decimal steps
+              min: 0, // Set min if provided, otherwise let it be undefined
+              // Set max if provided, otherwise let it be undefined
+            }}
             onChange={(e) => setProduct({ ...product, price: e.target.value })}
             value={product.price}
             focused={!!updateProduct}
@@ -233,6 +272,11 @@ export default function FormProduct({ onSubmit, updateProduct }) {
             InputLabelProps={{
               shrink: true,
             }}
+            inputProps={{
+              step: "any", // Allow decimal steps
+              min: 0, // Set min if provided, otherwise let it be undefined
+              // Set max if provided, otherwise let it be undefined
+            }}
             onChange={(e) => setProduct({ ...product, rating: e.target.value })}
             value={product.rating}
             focused={!!updateProduct}
@@ -246,6 +290,11 @@ export default function FormProduct({ onSubmit, updateProduct }) {
             placeholder="Enter Quantity"
             InputLabelProps={{
               shrink: true,
+            }}
+            inputProps={{
+              step: "any", // Allow decimal steps
+              min: 0, // Set min if provided, otherwise let it be undefined
+              // Set max if provided, otherwise let it be undefined
             }}
             onChange={(e) =>
               setProduct({ ...product, quantity: e.target.value })
@@ -263,8 +312,13 @@ export default function FormProduct({ onSubmit, updateProduct }) {
             InputLabelProps={{
               shrink: true,
             }}
+            inputProps={{
+              step: "any", // Allow decimal steps
+              min: 0, // Set min if provided, otherwise let it be undefined
+              // Set max if provided, otherwise let it be undefined
+            }}
             onChange={(e) =>
-              setProduct({ ...product, discound: e.target.value })
+              setProduct({ ...product, discount: e.target.value })
             }
             value={product.discount}
             focused={!!updateProduct}
