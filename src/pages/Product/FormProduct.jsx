@@ -160,7 +160,19 @@ export default function FormProduct({ onSubmit, updateProduct }) {
   }, []);
 
   useEffect(() => {
-    setProduct({ ...updateProduct, images: [] });
+    if (!updateProduct) {
+      setProduct({
+        title: "",
+        description: "",
+        price: 0,
+        rating: 0,
+        discount: 0,
+        quantity: 0,
+        images: [],
+        categoryId: "",
+        petType: "",
+      });
+    } else setProduct({ ...updateProduct, images: [] });
   }, [updateProduct]);
   console.log(product.petType);
   return (

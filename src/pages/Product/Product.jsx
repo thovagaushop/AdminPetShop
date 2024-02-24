@@ -298,7 +298,10 @@ export default function Product() {
                 class="btn-close"
                 data-bs-dismiss="modal"
                 aria-label="Close"
-                onClick={() => setShowModal(false)}
+                onClick={() => {
+                  setShowModal(false);
+                  setProduct(null);
+                }}
               ></button>
             </div>
             <div class="modal-body">
@@ -316,7 +319,10 @@ export default function Product() {
                 type="button"
                 class="btn btn-secondary"
                 data-bs-dismiss="modal"
-                onClick={() => setShowModal(false)}
+                onClick={() => {
+                  setShowModal(false);
+                  setProduct(null);
+                }}
               >
                 Close
               </button>
